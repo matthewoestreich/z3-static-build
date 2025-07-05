@@ -22,12 +22,18 @@ mkdir -p build && cd build
 
 cmake .. -DCMAKE_BUILD_TYPE=Release -DZ3_BUILD_LIBZ3_SHARED=OFF
 
+echo "Done configuring!"
+echo "Z3_BUILD_LIBZ3_SHARED: $(grep Z3_BUILD_LIBZ3_SHARED CMakeCache.txt)"
+
 # Detect platform and build accordingly
 if [[ "$OSTYPE" == "msys" ]]; then
-    cmake --build . --config Release -- -m:5
+    cmake --build . --verbose --config Release -- -m:5
+else if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac doesn't have 'nproc', use 'sysctl -n hw.physicalcpu' instead
+    cmake --build . --verbose --config Release -- -j$(sysctl -n hw.physicalcpu)
 else
-    # On Linux/macOS, use -j flag for parallel builds
-    cmake --build . --config Release -- -j$(nproc)
+    # On Linux, use -j$(nproc) flag for parallel builds
+    cmake --build . --verbose --config Release -- -j$(nproc)
 fi
 
 mkdir -p "$ROOT_DIR/dist/include"
