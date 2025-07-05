@@ -20,8 +20,11 @@ mkdir -p build && cd build
 
 cmake .. -DCMAKE_BUILD_TYPE=Release
 
+echo "OSTYPE is: $OSTYPE"
+echo "OS is: $OS"
+
 # Detect platform and build accordingly
-if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "win32"* ]]; then
+if [[ "$OS" == "Windows_NT" ]]; then
   # On Windows with MSBuild, use /m flag for parallel builds (no -j)
   cmake --build . --config Release -- /m
 else
