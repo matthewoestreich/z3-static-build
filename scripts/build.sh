@@ -19,7 +19,15 @@ cd "$Z3_DIR"
 mkdir -p build && cd build
 
 cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build . --config Release -- -j6
+
+# Detect platform and build accordingly
+if [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "win32"* ]]; then
+  # On Windows with MSBuild, use /m flag for parallel builds (no -j)
+  cmake --build . --config Release -- /m
+else
+  # On Linux/macOS, use -j flag for parallel builds
+  cmake --build . --config Release -j$(nproc)
+fi
 
 mkdir -p "$ROOT_DIR/dist/include"
 mkdir -p "$ROOT_DIR/dist/lib"
