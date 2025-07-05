@@ -9,12 +9,13 @@ set -euo pipefail
 echo "OSTYPE is ${OSTYPE}"
 
 # Get platform
+PLATFORM=""
 if [[ "$OSTYPE" == "msys" ]]; then
-    PLATFORM = "win32"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-    PLATFORM = "darwin"
-    elif [[ "$OSTYPE" == "linux"* ]]; then
-    PLATFORM = "linux"
+    PLATFORM="win32"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    PLATFORM="darwin"
+elif [[ "$OSTYPE" == "linux"* ]]; then
+    PLATFORM="linux"
 else
     echo "ERROR : UNKNOWN PLATFORM"
     exit 1
@@ -23,9 +24,9 @@ fi
 # Get architecture
 ARCH="$(uname -m)"
 if [[ "$ARCH" == *"x86_64"* ]]; then
-    ARCH = "x64"
-    elif [[ "$ARCH" == *"arm64"* || "$ARCH" == *"aarch64"* ]]; then
-    ARCH = "arm64"
+    ARCH="x64"
+elif [[ "$ARCH" == *"arm64"* || "$ARCH" == *"aarch64"* ]]; then
+    ARCH="arm64"
 else
     echo "ERROR : UNSUPPORTED ARCHITECTURE"
     exit 1
@@ -52,7 +53,7 @@ echo "Z3_BUILD_LIBZ3_SHARED: $(grep Z3_BUILD_LIBZ3_SHARED CMakeCache.txt)"
 # Detect platform and build accordingly
 if [[ "$OSTYPE" == "msys" ]]; then
     cmake --build . --verbose --config Release -- -m:5
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
+elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac doesn't have 'nproc', use 'sysctl -n hw.physicalcpu' instead
     cmake --build . --verbose --config Release -- -j$(sysctl -n hw.physicalcpu)
 else
