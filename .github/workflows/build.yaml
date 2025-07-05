@@ -69,7 +69,11 @@ jobs:
         shell: bash
         run: |
           mkdir -p archives
-          zip -r "archives/z3-${{ runner.os }}.zip" dist
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            pwsh -Command "Compress-Archive -Path dist/* -DestinationPath archives/z3-${{ steps.z3version.outputs.version_from_tag }}-Windows.zip"
+          else
+            zip -r "archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}.zip" dist
+          fi
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
