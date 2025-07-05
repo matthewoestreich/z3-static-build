@@ -28,6 +28,13 @@ jobs:
         shell: bash
         run: echo "Building Z3 version ${{ steps.z3version.outputs.version_from_tag }}"
 
+      - name: Get {platform}-{arch} name
+        id: platform-arch
+        shell: bash
+        run: |
+          PLATFORM_ARCH=$(node -p "require('os').platform() + '-' + require('os').arch()")
+          echo "platform_arch=$PLATFORM_ARCH" >> $GITHUB_OUTPUT
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -39,7 +46,7 @@ jobs:
 
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
-        run: brew install cmake make gcc
+        run: brew install --formula cmake make gcc
 
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
@@ -48,37 +55,41 @@ jobs:
       - name: Cache Z3 source
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}
-          key: z3-source-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
+          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}
+          key: z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-source
           restore-keys: |
-            z3-source-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
+            z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-source
 
       - name: Cache Z3 build output
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}/build
-          key: z3-build-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
+          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}/build
+          key: z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-build
           restore-keys: |
-            z3-build-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
+            z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-build
 
       - name: Build Z3
         shell: bash
         run: bash scripts/build.sh
 
-      - name: Archive build output
+      - name: Archive build (Windows)
+        if: runner.os == 'Windows'
         shell: bash
         run: |
           mkdir -p archives
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            pwsh -Command "Compress-Archive -Path dist/* -DestinationPath archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}.zip"
-          else
-            zip -r "archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}.zip" dist
-          fi
+          pwsh -Command "Compress-Archive -Path dist/* -DestinationPath archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip"
+
+      - name: Archive build (Non-Windows)
+        if: runner.os == 'macOS' || runner.os == 'Linux'
+        shell: bash
+        run: |
+          mkdir -p archives
+          zip -r "archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip" dist
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}.zip
+          files: archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
