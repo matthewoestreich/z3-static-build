@@ -50,16 +50,20 @@ jobs:
         with:
           path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}
           key: z3-source-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
-
-      - name: Build Z3
-        shell: bash
-        run: bash scripts/build.sh
+          restore-keys: |
+            z3-source-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
 
       - name: Cache Z3 build output
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}/build
           key: z3-build-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
+          restore-keys: |
+            z3-build-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
+
+      - name: Build Z3
+        shell: bash
+        run: bash scripts/build.sh
 
       - name: Archive build output
         shell: bash
