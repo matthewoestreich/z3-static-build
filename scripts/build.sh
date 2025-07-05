@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+echo "OSTYPE is ${OSTYPE}"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$SCRIPT_DIR/.."
 
@@ -20,11 +22,8 @@ mkdir -p build && cd build
 
 cmake .. -DCMAKE_BUILD_TYPE=Release
 
-echo "OSTYPE is: $OSTYPE"
-echo "OS is: $OS"
-
 # Detect platform and build accordingly
-if [[ "$OS" == "Windows_NT" ]]; then
+if [[ "$OSTYPE" == "msys" ]]; then
   # On Windows with MSBuild, use /m flag for parallel builds (no -j)
   cmake --build . --config Release -- /m
 else
