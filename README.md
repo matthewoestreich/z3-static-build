@@ -59,6 +59,12 @@ Builds are triggered on pushes to the \`main\` branch and on manual dispatch via
 
 Artifacts are uploaded for each platform in the \`dist/\` directory and published as releases.
 
+## Create Release
+
+```bash
+bash scripts/create_release.sh vX.X.X
+```
+
 ## License
 
 Z3 [MIT License](https://github.com/Z3Prover/z3/blob/master/LICENSE.txt).
