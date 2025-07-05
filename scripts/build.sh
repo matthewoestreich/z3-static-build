@@ -28,7 +28,7 @@ echo "Z3_BUILD_LIBZ3_SHARED: $(grep Z3_BUILD_LIBZ3_SHARED CMakeCache.txt)"
 # Detect platform and build accordingly
 if [[ "$OSTYPE" == "msys" ]]; then
     cmake --build . --verbose --config Release -- -m:5
-else if [[ "$OSTYPE" == "darwin"* ]]; then
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac doesn't have 'nproc', use 'sysctl -n hw.physicalcpu' instead
     cmake --build . --verbose --config Release -- -j$(sysctl -n hw.physicalcpu)
 else
@@ -42,4 +42,4 @@ mkdir -p "$ROOT_DIR/dist/lib"
 #cp -r "$Z3_DIR"/src/api/*.h "$ROOT_DIR/dist/include/"
 #cp -r "$Z3_DIR"/src/api/c++/z3++.h "$ROOT_DIR/dist/include/"
 #cp "$Z3_DIR/build/libz3.a" "$ROOT_DIR/dist/lib/"
-cp -r "$Z3_DIR/build" "$ROOT_DIR/dist"
+cp -r "$Z3_DIR/build/" "$ROOT_DIR/dist/"
