@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# CUSTOM
+.DS_Store
