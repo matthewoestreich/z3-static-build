@@ -18,12 +18,14 @@ jobs:
 
       - name: Set Z3 version from tag
         id: z3version
+        shell: bash
         run: |
           TAG=${GITHUB_REF##*/}
           VERSION=${TAG#v}  # strip leading 'v'
           echo "version_from_tag=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Use version
+        shell: bash
         run: echo "Building Z3 version ${{ steps.z3version.outputs.version_from_tag }}"
 
       - name: Set up Python
