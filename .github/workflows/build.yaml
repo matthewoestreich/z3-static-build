@@ -16,6 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set Z3 version from tag
+        id: z3version
+        run: |
+          TAG=${GITHUB_REF##*/}
+          VERSION=${TAG#v}  # strip leading 'v'
+          echo "version_from_tag=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Use version
+        run: echo "Building Z3 version ${{ steps.z3version.outputs.version_from_tag }}"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -32,6 +42,18 @@ jobs:
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.3.1
+
+      - name: Cache Z3 source
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}
+          key: z3-source-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
+
+      - name: Cache Z3 build output
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}/build
+          key: z3-build-${{ steps.z3version.outputs.version_from_tag }}-${{ runner.os }}
 
       - name: Build Z3
         shell: bash
