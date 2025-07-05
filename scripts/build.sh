@@ -6,8 +6,6 @@ Z3_VERSION="4.15.2"
 
 set -euo pipefail
 
-echo "OSTYPE is ${OSTYPE}"
-
 # Get platform
 PLATFORM=""
 if [[ "$OSTYPE" == "msys" ]]; then
@@ -32,10 +30,12 @@ else
     exit 1
 fi
 
-PLAT_ARCH="$PLATFORM-$ARCH"
+echo "OSTYPE is ${OSTYPE}"
+echo "PLATFORM_ARCHITECTURE is ${PLATFORM}-${ARCH}"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$SCRIPT_DIR/.."
-Z3_DIR="$ROOT_DIR/z3-${Z3_VERSION}-${PLAT_ARCH}"
+Z3_DIR="$ROOT_DIR/z3-${Z3_VERSION}"
 
 # Clone if not already present
 if [ ! -d "$Z3_DIR" ]; then

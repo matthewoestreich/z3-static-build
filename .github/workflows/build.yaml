@@ -55,7 +55,7 @@ jobs:
       - name: Cache Z3 source
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}
+          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}
           key: z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-source
           restore-keys: |
             z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-source
@@ -63,7 +63,7 @@ jobs:
       - name: Cache Z3 build output
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}/build
+          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}/build
           key: z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-build
           restore-keys: |
             z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-build
