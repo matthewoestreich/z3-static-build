@@ -24,7 +24,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DZ3_BUILD_LIBZ3_SHARED=OFF
 
 # Detect platform and build accordingly
 if [[ "$OSTYPE" == "msys" ]]; then
-    cmake --build . --config Release /m:5
+    cmake --build . --config Release -- -m:5
 else
     # On Linux/macOS, use -j flag for parallel builds
     cmake --build . --config Release -- -j$(nproc)
