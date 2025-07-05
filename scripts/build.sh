@@ -1,16 +1,40 @@
 #!/usr/bin/env bash
 
+# UPDATE ME IF YOU WANT TO BUILD A DIFF VERSION!
+# This script will automatically download it to project root.
+Z3_VERSION="4.15.2"
+
 set -euo pipefail
 
 echo "OSTYPE is ${OSTYPE}"
 
+# Get platform
+if [[ "$OSTYPE" == "msys" ]]; then
+    PLATFORM = "win32"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+    PLATFORM = "darwin"
+    elif [[ "$OSTYPE" == "linux"* ]]; then
+    PLATFORM = "linux"
+else
+    echo "ERROR : UNKNOWN PLATFORM"
+    exit 1
+fi
+
+# Get architecture
+ARCH="$(uname -m)"
+if [[ "$ARCH" == *"x86_64"* ]]; then
+    ARCH = "x64"
+    elif [[ "$ARCH" == *"arm64"* || "$ARCH" == *"aarch64"* ]]; then
+    ARCH = "arm64"
+else
+    echo "ERROR : UNSUPPORTED ARCHITECTURE"
+    exit 1
+fi
+
+PLAT_ARCH="$PLATFORM-$ARCH"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$SCRIPT_DIR/.."
-
-# UPDATE ME IF YOU WANT TO BUILD A DIFF VERSION!
-# This script will automatically download it to project root.
-Z3_VERSION="4.15.2"
-Z3_DIR="$ROOT_DIR/z3-${Z3_VERSION}"
+Z3_DIR="$ROOT_DIR/z3-${Z3_VERSION}-${PLAT_ARCH}"
 
 # Clone if not already present
 if [ ! -d "$Z3_DIR" ]; then
