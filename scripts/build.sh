@@ -25,7 +25,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 # Detect platform and build accordingly
 if [[ "$OSTYPE" == "msys" ]]; then
   # On Windows with MSBuild, use /m flag for parallel builds (no -j)
-  cmake --build . --config Release -- "/m"
+  cmake --build . --config Release
 else
   # On Linux/macOS, use -j flag for parallel builds
   cmake --build . --config Release -j$(nproc)
