@@ -67,9 +67,6 @@ jobs:
           g++ --version
           make --version
 
-      - name: Build with Make
-        run: make # Executes the 'make' command to build your project
-
       - name: Compute cache key
         id: cache-key
         shell: bash
