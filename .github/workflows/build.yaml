@@ -55,7 +55,7 @@ jobs:
       - name: Check for nmake (Windows)
         if: runner.os == 'Windows'
         shell: bash
-        run: which nmake
+        run: vswhere nmake
 
       - name: Compute cache key
         id: cache-key
