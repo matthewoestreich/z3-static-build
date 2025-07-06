@@ -66,6 +66,7 @@ jobs:
           gcc --version
           g++ --version
           make --version
+          which cl
 
       - name: Compute cache key
         id: cache-key
