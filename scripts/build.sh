@@ -113,14 +113,26 @@ echo ""
 
 # Copy license
 echo " - Copying LICENSE"
-cp "$Z3_DIR/LICENSE.txt" "$ARCHIVE_DIR"
+if [ -f "$Z3_DIR/LICENSE.txt" ]; then
+    cp "$Z3_DIR/LICENSE.txt" "$ARCHIVE_DIR"
+else
+    echo "$Z3_DIR/LICENSE.txt does not exist"
+fi
 
 # Copy lib
 echo " - Copying libz3"
 if [[ "$PLATFORM" == "win32" ]]; then
-    cp "$BUILD_DIR/libz3.lib" "$ARCHIVE_BIN_DIR"
+    if [ -f "$BUILD_DIR/libz3.lib" ]; then
+        cp "$BUILD_DIR/libz3.lib" "$ARCHIVE_BIN_DIR"
+    else
+        echo "$BUILD_DIR/libz3.lib does not exist"
+    fi
 elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
-    cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
+    if [ -f "$BUILD_DIR/libz3.a" ]; then
+        cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
+    else
+        echo "$BUILD_DIR/libz3.a does not exist"
+    fi
 else
     echo ""
     echo "[ERROR] Unrecognized platform encountered while copying libz3"
