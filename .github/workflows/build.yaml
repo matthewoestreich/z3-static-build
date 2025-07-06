@@ -50,16 +50,13 @@ jobs:
 
       - name: Set up environment (Windows)
         if: runner.os == 'Windows'
-        #uses: microsoft/setup-msbuild@v1.3.1
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
+        uses: microsoft/setup-msbuild@v1.3.1
 
       - name: Compute cache key
         id: cache-key
         shell: bash
         run: |
-          echo "hash=${{ hashFiles(format('z3-{0}/**/*.*', steps.z3version.outputs.version_from_tag)) }}" >> $GITHUB_OUTPUT
+          echo "hash=${{ hashFiles('.github/workflows/*.yaml', 'scripts/build.sh', format('z3-{0}/**/*.*', steps.z3version.outputs.version_from_tag)) }}" >> $GITHUB_OUTPUT
 
       - name: Use cache key
         shell: bash

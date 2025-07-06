@@ -59,46 +59,38 @@ else
 fi
 
 ###################################################################################################################
-# Move into Z3 dir
+# Move into Z3 dir, create build folder, and move into build folder
 ###################################################################################################################
 cd "$Z3_DIR"
-
-###################################################################################################################
-# Run python config script
-###################################################################################################################
-echo ""
-echo "[INFO] Attempting to bootstrap build via 'python'"
-echo ""
-if [[ "$PLATFORM" == "win32" ]]; then
-    python scripts/mk_make.py --staticlib --single-threaded -x
-elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
-    python scripts/mk_make.py --staticlib --single-threaded
-else
-    echo ""
-    echo "[ERROR] : Unrecognized platform"
-    echo ""
-    exit 1
-fi
-
-###################################################################################################################
-# Move into build folder
-###################################################################################################################
+mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
+
+###################################################################################################################
+# Configure build system
+###################################################################################################################
+echo ""
+echo "[INFO] Attempting to configure build system"
+echo ""
+
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DZ3_BUILD_LIBZ3_SHARED=false ../
 
 ###################################################################################################################
 # Run 'make'
 ###################################################################################################################
 echo ""
-echo "[INFO] Attempting to run build via 'make'"
+echo "[INFO] Attempting build"
 echo ""
-if [[ "$OSTYPE" == "msys" ]]; then
-    nmake
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # Mac, use 'sysctl -n hw.logicalcpu' to get number of logical cores
-    make -j$(sysctl -n hw.logicalcpu)
+if [[ "$PLATFORM" == "win32" ]]; then
+    cmake --build . -- -m:"$NUMBER_OF_PROCESSORS"
+elif [[ "$PLATFORM" == "darwin" ]]; then
+    cmake --build . -- -j$(sysctl -n hw.logicalcpu)
+elif [[ "$PLATFORM" == "linux" ]]; then
+    cmake --build . --config Release -- -j$(nproc)
 else
-    # Linux, use nproc to get number of logical cores.
-    make -j$(nproc)
+    echo ""
+    echo "[ERROR] Unrecognized platform encountered while attempting to build"
+    echo ""
+    exit 1
 fi
 
 ###################################################################################################################
@@ -118,16 +110,28 @@ mkdir -p "$ARCHIVE_BIN_DIR"
 echo ""
 echo "[INFO] Copying build files into archive"
 echo ""
+
 # Copy license
 echo " - Copying LICENSE"
 cp "$Z3_DIR/LICENSE.txt" "$ARCHIVE_DIR"
+
 # Copy lib
-echo " - Copying libz3.a"
-cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
+echo " - Copying libz3"
+if [[ "$PLATFORM" == "win32" ]]; then
+    cp "$BUILD_DIR/libz3.lib" "$ARCHIVE_BIN_DIR"
+elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
+    cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
+else
+    echo ""
+    echo "[ERROR] Unrecognized platform encountered while copying libz3"
+    echo ""
+    exit 1
+fi
+
 # Copy headers
 # I chose these headers bc that is what the official build provides.
 echo " - Copying header files"
-cp "$Z3_DIR/src/util/z3_version.h" "$ARCHIVE_INCLUDE_DIR"
+cp "$Z3_DIR/build/src/util/z3_version.h" "$ARCHIVE_INCLUDE_DIR"
 cp "$Z3_DIR/src/api/z3_v1.h" "$ARCHIVE_INCLUDE_DIR"
 cp "$Z3_DIR/src/api/z3_spacer.h" "$ARCHIVE_INCLUDE_DIR"
 cp "$Z3_DIR/src/api/z3_rcf.h" "$ARCHIVE_INCLUDE_DIR"
@@ -141,3 +145,6 @@ cp "$Z3_DIR/src/api/z3_api.h" "$ARCHIVE_INCLUDE_DIR"
 cp "$Z3_DIR/src/api/z3_algebraic.h" "$ARCHIVE_INCLUDE_DIR"
 cp "$Z3_DIR/src/api/z3.h" "$ARCHIVE_INCLUDE_DIR"
 cp "$Z3_DIR/src/api/c++/z3++.h" "$ARCHIVE_INCLUDE_DIR"
+
+###################################################################################################################
+###################################################################################################################
