@@ -50,15 +50,17 @@ jobs:
 
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
-        #uses: microsoft/setup-msbuild@v1.3.1
-        uses: msys2/setup-msys2@v2
-        with:
-          install: make
+        uses: microsoft/setup-msbuild@v1.3.1
+
+      - name: Install Make via Chocolatey (Windows)
+        if: runner.os == 'Windows'
+        run: choco install make
 
       - name: Compute cache key
         id: cache-key
         shell: bash
-        run: echo "hash=${{ format(hashFiles('{0}/z3-{1}/**/*.*'), github.workspace, steps.z3version.outputs.version_from_tag) }}" >> $GITHUB_OUTPUT
+        run: |
+          echo "hash=${{ hashFiles(format('z3-{0}/**/*.*', steps.z3version.outputs.version_from_tag)) }}" >> $GITHUB_OUTPUT
 
       - name: Use cache key
         shell: bash
