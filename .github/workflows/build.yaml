@@ -52,6 +52,11 @@ jobs:
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.3.1
 
+      - name: Check for nmake (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: which nmake
+
       - name: Compute cache key
         id: cache-key
         shell: bash
