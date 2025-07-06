@@ -48,14 +48,14 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install --formula cmake make gcc
 
-      - name: Set up environment (Windows)
+      #- name: Set up environment (Windows)
+      #  if: runner.os == 'Windows'
+      #  uses: microsoft/setup-msbuild@v1.3.1
+      - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1.3.1
-
-      - name: Check for nmake (Windows)
-        if: runner.os == 'Windows'
-        shell: bash
-        run: vswhere nmake
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
 
       - name: Compute cache key
         id: cache-key
