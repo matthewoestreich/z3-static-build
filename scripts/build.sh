@@ -104,10 +104,6 @@ else
     exit 1
 fi
 
-echo " "
-echo "[INFO] Build folder contents:"
-ls -a "$BUILD_DIR"
-
 ###################################################################################################################
 # Create folder to store built files, aka "archive" path
 # Our GitHub Action workflow will pick up files in "ARCHIVE_FOLDER" and create release assets with them
@@ -137,18 +133,24 @@ fi
 # Copy lib
 echo " - Copying libz3"
 if [[ "$PLATFORM" == "win32" ]]; then
+    # For debugging
+    if [ -d "$BUILD_DIR" ]; then
+        cp -r "$BUILD_DIR/"* "$ARCHIVE_BIN_DIR"
+    else
+        echo "[WARN] $BUILD_DIR does not exist"
+    fi
     # Check for .lib file
-    if [ -f "$BUILD_DIR/libz3.lib" ]; then
-        cp "$BUILD_DIR/libz3.lib" "$ARCHIVE_BIN_DIR"
-    else
-        echo "[WARN] $BUILD_DIR/libz3.lib does not exist"
-    fi
+    #if [ -f "$BUILD_DIR/libz3.lib" ]; then
+    #    cp "$BUILD_DIR/libz3.lib" "$ARCHIVE_BIN_DIR"
+    #else
+    #    echo "[WARN] $BUILD_DIR/libz3.lib does not exist"
+    #fi
     # Check for .a file (shouldn't happen but if one is generated, may as well use it)
-    if [ -f "$BUILD_DIR/libz3.a" ]; then
-        cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
-    else
-        echo "[WARN] $BUILD_DIR/libz3.a does not exist"
-    fi
+    #if [ -f "$BUILD_DIR/libz3.a" ]; then
+    #    cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
+    #else
+    #    echo "[WARN] $BUILD_DIR/libz3.a does not exist"
+    #fi
 elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
     if [ -f "$BUILD_DIR/libz3.a" ]; then
         cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
