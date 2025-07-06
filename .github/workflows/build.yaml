@@ -50,7 +50,10 @@ jobs:
 
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1.3.1
+        #uses: microsoft/setup-msbuild@v1.3.1
+        uses: msys2/setup-msys2@v2
+        with:
+          install: make
 
       - name: Compute cache key
         id: cache-key
