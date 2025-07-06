@@ -75,7 +75,7 @@ echo " "
 CMD_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DZ3_BUILD_LIBZ3_SHARED=false"
 
 if [[ "$PLATFORM" == "win32" ]]; then
-    cmake -G "NMake Makefiles" $CMD_OPTIONS ../
+    cmake -G "Visual Studio 17 2022" $CMD_OPTIONS ../
 elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
     cmake -G "Unix Makefiles" $CMD_OPTIONS ../
 else
@@ -92,7 +92,7 @@ echo " "
 echo "[INFO] Attempting build"
 echo " "
 if [[ "$PLATFORM" == "win32" ]]; then
-    cmake --build . -- /m #"$NUMBER_OF_PROCESSORS"
+    cmake --build . -- /m # $NUMBER_OF_PROCESSORS
 elif [[ "$PLATFORM" == "darwin" ]]; then
     cmake --build . -- -j$(sysctl -n hw.logicalcpu)
 elif [[ "$PLATFORM" == "linux" ]]; then
