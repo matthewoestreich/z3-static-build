@@ -56,9 +56,14 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install make
 
-      - name: Check make version (Windows)
+      - name: Check 'make' version (Windows)
         if: runner.os == 'Windows'
         run: make --version
+        shell: bash
+
+      - name: Check 'cl' version (Windows)
+        if: runner.os == 'Windows'
+        run: which cl
         shell: bash
 
       - name: Compute cache key
