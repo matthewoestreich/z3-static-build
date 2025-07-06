@@ -48,25 +48,9 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install --formula cmake make gcc
 
-      #- name: Set up environment (Windows)
-      #  if: runner.os == 'Windows'
-      #  #uses: microsoft/setup-msbuild@v1.3.1
-      #  uses: ilammy/msvc-dev-cmd@v1.13.0
-      - name: (Windows) Install MinGW-w64 (for GCC/G++)
+      - name: Set up environment (Windows)
         if: runner.os == 'Windows'
-        run: choco install mingw --params "/InstallDir:C:\mingw" # Installs MinGW-w64 via Chocolatey
-
-      - name: (Windows) Add MinGW to PATH
-        if: runner.os == 'Windows'
-        run: echo "C:\mingw\bin" | Out-File -FilePath $env:GITHUB_PATH -Append # Adds MinGW to the system PATH
-
-      - name: (Windows) Verify MinGW Installation
-        if: runner.os == 'Windows'
-        run: |
-          gcc --version
-          g++ --version
-          make --version
-          which cl
+        uses: microsoft/setup-msbuild@v1.3.1
 
       - name: Compute cache key
         id: cache-key

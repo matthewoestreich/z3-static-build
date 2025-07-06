@@ -69,7 +69,16 @@ cd "$Z3_DIR"
 echo ""
 echo "[INFO] Attempting to bootstrap build via 'python'"
 echo ""
-python scripts/mk_make.py --staticlib --single-threaded
+if [[ "$PLATFORM" == "win32" ]]; then
+    python scripts/mk_make.py --staticlib --single-threaded -x
+elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
+    python scripts/mk_make.py --staticlib --single-threaded
+else
+    echo ""
+    echo "[ERROR] : Unrecognized platform"
+    echo ""
+    exit 1
+fi
 
 ###################################################################################################################
 # Move into build folder
@@ -83,8 +92,7 @@ echo ""
 echo "[INFO] Attempting to run build via 'make'"
 echo ""
 if [[ "$OSTYPE" == "msys" ]]; then
-    # Windows, use env var $NUMBER_OF_PROCESSORS to get logical number of cores.
-    make -j5
+    nmake
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac, use 'sysctl -n hw.logicalcpu' to get number of logical cores
     make -j$(sysctl -n hw.logicalcpu)
