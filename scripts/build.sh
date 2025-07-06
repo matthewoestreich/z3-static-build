@@ -84,6 +84,7 @@ echo "[INFO] Attempting to run build via 'make'"
 echo ""
 if [[ "$OSTYPE" == "msys" ]]; then
     # Windows, use env var $NUMBER_OF_PROCESSORS to get logical number of cores.
+    export CXXFLAGS="/FS"
     make -j$NUMBER_OF_PROCESSORS
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac, use 'sysctl -n hw.logicalcpu' to get number of logical cores
