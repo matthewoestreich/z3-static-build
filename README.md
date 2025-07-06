@@ -55,9 +55,11 @@ bash scripts/build.sh
 
 ## GitHub Actions
 
-Builds are triggered on pushes to the \`main\` branch and on manual dispatch via the GitHub Actions UI.
+Builds are triggered on pushes to the `main` branch and on manual dispatch via the GitHub Actions UI.
 
-Artifacts are uploaded for each platform in the \`dist/\` directory and published as releases.
+Artifacts are uploaded for each platform in the "archive" directory and published as releases. 
+
+The "archive" directory is a folder named after the Z3 version, current platform, and current architecture. So if you were on `Linux x86_64` and building Z3 `v1.1.1` the "archive" folder would be: `z3-1.1.1-linux-x64`
 
 ## Create Release
 
