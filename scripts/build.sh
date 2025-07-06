@@ -131,20 +131,32 @@ fi
 # Copy headers
 # I chose these headers bc that is what the official build provides.
 echo " - Copying header files"
-cp "$Z3_DIR/build/src/util/z3_version.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_v1.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_spacer.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_rcf.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_polynomial.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_optimization.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_macros.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_fpa.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_fixedpoint.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_ast_containers.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_api.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3_algebraic.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/z3.h" "$ARCHIVE_INCLUDE_DIR"
-cp "$Z3_DIR/src/api/c++/z3++.h" "$ARCHIVE_INCLUDE_DIR"
+
+headers=(
+    "build/src/util/z3_version.h"
+    "src/api/z3_v1.h"
+    "src/api/z3_spacer.h"
+    "src/api/z3_rcf.h"
+    "src/api/z3_polynomial.h"
+    "src/api/z3_optimization.h"
+    "src/api/z3_macros.h"
+    "src/api/z3_fpa.h"
+    "src/api/z3_fixedpoint.h"
+    "src/api/z3_ast_containers.h"
+    "src/api/z3_api.h"
+    "src/api/z3_algebraic.h"
+    "src/api/z3.h"
+    "src/api/c++/z3++.h"
+)
+
+for header in "${headers[@]}"; do
+    full_path="$Z3_DIR/$header"
+    if [ -f "$full_path" ]; then
+        cp "$full_path" "$ARCHIVE_INCLUDE_DIR"
+    else
+        echo "$full_path does not exist"
+    fi
+done
 
 ###################################################################################################################
 ###################################################################################################################
