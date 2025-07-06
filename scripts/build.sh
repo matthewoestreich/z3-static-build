@@ -93,6 +93,11 @@ else
     exit 1
 fi
 
+echo " "
+echo "Build folder contents:"
+echo " "
+ls -a "$BUILD_DIR"
+
 ###################################################################################################################
 # Create folder to store built files, aka "archive" path
 # Our GitHub Action workflow will pick up files in "ARCHIVE_FOLDER" and archive them
