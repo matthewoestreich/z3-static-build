@@ -92,6 +92,7 @@ echo " "
 echo "[INFO] Attempting build"
 echo " "
 if [[ "$PLATFORM" == "win32" ]]; then
+    # `--config Release` MUST EXIST HERE FOR WINDOWS BUILD! OTHERWISE IT WON'T GENERATE THE libz3.lib FILE
     cmake --build . --config Release -- -m:"$NUMBER_OF_PROCESSORS"
 elif [[ "$PLATFORM" == "darwin" ]]; then
     cmake --build . --config Release -- -j$(sysctl -n hw.logicalcpu)
@@ -133,29 +134,18 @@ fi
 # Copy lib
 echo " - Copying libz3"
 if [[ "$PLATFORM" == "win32" ]]; then
-    # For debugging
-    if [ -d "$BUILD_DIR" ]; then
-        cp -r "$BUILD_DIR/"* "$ARCHIVE_BIN_DIR"
+    WIN_LIB_PATH="$BUILD_DIR/Release/libz3.lib"
+    if [ -f "$WIN_LIB_PATH" ]; then
+        cp "$WIN_LIB_PATH" "$ARCHIVE_BIN_DIR"
     else
-        echo "[WARN] $BUILD_DIR does not exist"
+        echo "[WARN] $WIN_LIB_PATH does not exist"
     fi
-    # Check for .lib file
-    #if [ -f "$BUILD_DIR/libz3.lib" ]; then
-    #    cp "$BUILD_DIR/libz3.lib" "$ARCHIVE_BIN_DIR"
-    #else
-    #    echo "[WARN] $BUILD_DIR/libz3.lib does not exist"
-    #fi
-    # Check for .a file (shouldn't happen but if one is generated, may as well use it)
-    #if [ -f "$BUILD_DIR/libz3.a" ]; then
-    #    cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
-    #else
-    #    echo "[WARN] $BUILD_DIR/libz3.a does not exist"
-    #fi
 elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
-    if [ -f "$BUILD_DIR/libz3.a" ]; then
-        cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
+    LIBZ3_A_PATH="$BUILD_DIR/libz3.a"
+    if [ -f "$LIBZ3_A_PATH" ]; then
+        cp "$LIBZ3_A_PATH" "$ARCHIVE_BIN_DIR"
     else
-        echo "[WARN] $BUILD_DIR/libz3.a does not exist"
+        echo "[WARN] $LIBZ3_A_PATH does not exist"
     fi
 else
     echo " "
