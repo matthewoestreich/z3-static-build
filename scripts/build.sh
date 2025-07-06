@@ -100,7 +100,7 @@ ls -a "$BUILD_DIR"
 
 ###################################################################################################################
 # Create folder to store built files, aka "archive" path
-# Our GitHub Action workflow will pick up files in "ARCHIVE_FOLDER" and archive them
+# Our GitHub Action workflow will pick up files in "ARCHIVE_FOLDER" and create release assets with them
 ###################################################################################################################
 ARCHIVE_DIR="$ROOT_DIR/z3-$Z3_VERSION-$PLATFORM-$ARCH"
 ARCHIVE_INCLUDE_DIR="$ARCHIVE_DIR/include"
