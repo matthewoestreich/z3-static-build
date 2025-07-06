@@ -81,7 +81,7 @@ src/api/python/z3/z3consts.py
 src/api/python/z3/z3core.py
 src/ast/pattern/database.h
 src/util/version.h
-src/util/z3_version.h
+#src/util/z3_version.h
 src/api/java/Native.cpp
 src/api/java/Native.java
 src/api/java/enumerations/*.java

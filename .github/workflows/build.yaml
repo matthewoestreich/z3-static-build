@@ -52,21 +52,22 @@ jobs:
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.3.1
 
-      - name: Cache Z3 source
+      - name: Compute cache key
+        id: cache-key
+        shell: bash
+        run: echo "hash=${{ format(hashFiles('{0}/z3-{1}/**/*.*'), github.workspace, steps.z3version.outputs.version_from_tag) }}" >> $GITHUB_OUTPUT
+
+      - name: Use cache key
+        shell: bash
+        run: echo "Computed cache key (hash of z3-dir) ${{ steps.cache-key.outputs.hash }}"
+
+      - name: Cache Z3 build
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}
-          key: z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-source
+          key: z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-${{ steps.cache-key.outputs.hash }}
           restore-keys: |
-            z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-source
-
-      - name: Cache Z3 build output
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/z3-${{ steps.z3version.outputs.version_from_tag }}/build
-          key: z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-build
-          restore-keys: |
-            z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-build
+            z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}-${{ steps.cache-key.outputs.hash }}
 
       - name: Build Z3
         shell: bash
@@ -76,20 +77,22 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         run: |
-          mkdir -p archives
-          pwsh -Command "Compress-Archive -Path dist/* -DestinationPath archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip"
+          pwsh -Command "Compress-Archive \
+            -Path z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}/* \
+            -DestinationPath z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip"
 
       - name: Archive build (Non-Windows)
         if: runner.os == 'macOS' || runner.os == 'Linux'
         shell: bash
         run: |
-          mkdir -p archives
-          zip -r "archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip" dist
+          zip -r \
+            "z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip" \
+            z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: archives/z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip
+          files: z3-${{ steps.z3version.outputs.version_from_tag }}-${{ steps.platform-arch.outputs.platform_arch }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

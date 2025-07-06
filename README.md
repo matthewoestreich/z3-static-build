@@ -62,10 +62,26 @@ Artifacts are uploaded for each platform in the \`dist/\` directory and publishe
 ## Create Release
 
 ```bash
+# From root of this project
 bash scripts/create_release.sh vX.X.X
+# Where 'vX.X.X' is the tag (eg. v1.0.0)
 ```
 
-## License
+## Delete Tag 
+
+**This will delete both the remote and local tag**
+
+If something went wrong during a build, you should delete 'that' tag before you try again.
+
+```bash
+# From root of this project
+bash scripts/delete_tag.sh vX.X.X
+# Where 'vX.X.X' is the tag (eg. v1.0.0)
+```
+
+⚠️ If there are any releases tied to the tag you just deleted, don't forget to manually remove the release!
+
+## Licenses
 
 Z3 [MIT License](https://github.com/Z3Prover/z3/blob/master/LICENSE.txt).
 

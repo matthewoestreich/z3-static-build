@@ -34,3 +34,5 @@
 # CUSTOM
 .DS_Store
 .vscode/
+z3*/build
+z3-*.*.*-*-*/

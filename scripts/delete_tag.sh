@@ -13,3 +13,5 @@ fi
 
 git tag -d "$1"
 git push --delete origin "$1"
+
+echo "If there are any releases using tag '$1' you will need to manually delete them!"
