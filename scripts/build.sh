@@ -20,9 +20,9 @@ BUILD_DIR="$Z3_DIR/build"
 # Clone if not already present
 ###################################################################################################################
 if [ ! -d "$Z3_DIR" ]; then
-    echo ""
+    echo " "
     echo "[INFO] Z3 version '$Z3_VERSION' not found! Cloning source now..."
-    echo ""
+    echo " "
     git clone --depth=1 --branch "z3-${Z3_VERSION}" https://github.com/Z3Prover/z3 "$Z3_DIR"
 fi
 
@@ -37,9 +37,9 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux"* ]]; then
     PLATFORM="linux"
 else
-    echo ""
+    echo " "
     echo "[ERROR] : Unsupported platform"
-    echo ""
+    echo " "
     exit 1
 fi
 ###################################################################################################################
@@ -52,9 +52,9 @@ if [[ "$ARCH" == *"x86_64"* ]]; then
 elif [[ "$ARCH" == *"arm64"* || "$ARCH" == *"aarch64"* ]]; then
     ARCH="arm64"
 else
-    echo ""
+    echo " "
     echo "[ERROR] : Unsupported architecture"
-    echo ""
+    echo " "
     exit 1
 fi
 
@@ -68,18 +68,29 @@ cd "$BUILD_DIR"
 ###################################################################################################################
 # Configure build system
 ###################################################################################################################
-echo ""
+echo " "
 echo "[INFO] Attempting to configure build system"
-echo ""
+echo " "
 
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DZ3_BUILD_LIBZ3_SHARED=false ../
+CMD_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DZ3_BUILD_LIBZ3_SHARED=false"
+
+if [[ "$PLATFORM" == "win32" ]]; then
+    cmake -G "NMake Makefiles" $CMD_OPTIONS ../
+elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
+    cmake -G "Unix Makefiles" $CMD_OPTIONS ../
+else
+    echo " "
+    echo "[ERROR] Unrecognized platform encountered while attempting to configure build system"
+    echo " "
+    exit 1
+fi
 
 ###################################################################################################################
 # Run 'make'
 ###################################################################################################################
-echo ""
+echo " "
 echo "[INFO] Attempting build"
-echo ""
+echo " "
 if [[ "$PLATFORM" == "win32" ]]; then
     cmake --build . -- -j"$NUMBER_OF_PROCESSORS"
 elif [[ "$PLATFORM" == "darwin" ]]; then
@@ -87,15 +98,14 @@ elif [[ "$PLATFORM" == "darwin" ]]; then
 elif [[ "$PLATFORM" == "linux" ]]; then
     cmake --build . -- -j$(nproc)
 else
-    echo ""
+    echo " "
     echo "[ERROR] Unrecognized platform encountered while attempting to build"
-    echo ""
+    echo " "
     exit 1
 fi
 
 echo " "
-echo "Build folder contents:"
-echo " "
+echo "[INFO] Build folder contents:"
 ls -a "$BUILD_DIR"
 
 ###################################################################################################################
@@ -112,43 +122,49 @@ mkdir -p "$ARCHIVE_BIN_DIR"
 ###################################################################################################################
 # Copy headers, lib, and license from build to our "archive" path
 ###################################################################################################################
-echo ""
+echo " "
 echo "[INFO] Copying build files into archive"
-echo ""
+echo " "
 
 # Copy license
 echo " - Copying LICENSE"
 if [ -f "$Z3_DIR/LICENSE.txt" ]; then
     cp "$Z3_DIR/LICENSE.txt" "$ARCHIVE_DIR"
 else
-    echo "$Z3_DIR/LICENSE.txt does not exist"
+    echo "[WARN] $Z3_DIR/LICENSE.txt does not exist"
 fi
 
 # Copy lib
 echo " - Copying libz3"
 if [[ "$PLATFORM" == "win32" ]]; then
+    # Check for .lib file
     if [ -f "$BUILD_DIR/libz3.lib" ]; then
         cp "$BUILD_DIR/libz3.lib" "$ARCHIVE_BIN_DIR"
     else
-        echo "$BUILD_DIR/libz3.lib does not exist"
+        echo "[WARN] $BUILD_DIR/libz3.lib does not exist"
+    fi
+    # Check for .a file (shouldn't happen but if one is generated, may as well use it)
+    if [ -f "$BUILD_DIR/libz3.a" ]; then
+        cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
+    else
+        echo "[WARN] $BUILD_DIR/libz3.a does not exist"
     fi
 elif [[ "$PLATFORM" == "darwin" || "$PLATFORM" == "linux" ]]; then
     if [ -f "$BUILD_DIR/libz3.a" ]; then
         cp "$BUILD_DIR/libz3.a" "$ARCHIVE_BIN_DIR"
     else
-        echo "$BUILD_DIR/libz3.a does not exist"
+        echo "[WARN] $BUILD_DIR/libz3.a does not exist"
     fi
 else
-    echo ""
+    echo " "
     echo "[ERROR] Unrecognized platform encountered while copying libz3"
-    echo ""
+    echo " "
     exit 1
 fi
 
 # Copy headers
 # I chose these headers bc that is what the official build provides.
 echo " - Copying header files"
-
 headers=(
     "build/src/util/z3_version.h"
     "src/api/z3_v1.h"
@@ -165,13 +181,12 @@ headers=(
     "src/api/z3.h"
     "src/api/c++/z3++.h"
 )
-
 for header in "${headers[@]}"; do
     full_path="$Z3_DIR/$header"
     if [ -f "$full_path" ]; then
         cp "$full_path" "$ARCHIVE_INCLUDE_DIR"
     else
-        echo "$full_path does not exist"
+        echo "[WARN] $full_path does not exist"
     fi
 done
 
