@@ -92,11 +92,11 @@ echo " "
 echo "[INFO] Attempting build"
 echo " "
 if [[ "$PLATFORM" == "win32" ]]; then
-    cmake --build . -- -m:"$NUMBER_OF_PROCESSORS"
+    cmake --build . --config Release -- -m:"$NUMBER_OF_PROCESSORS"
 elif [[ "$PLATFORM" == "darwin" ]]; then
-    cmake --build . -- -j$(sysctl -n hw.logicalcpu)
+    cmake --build . --config Release -- -j$(sysctl -n hw.logicalcpu)
 elif [[ "$PLATFORM" == "linux" ]]; then
-    cmake --build . -- -j$(nproc)
+    cmake --build . --config Release -- -j$(nproc)
 else
     echo " "
     echo "[ERROR] Unrecognized platform encountered while attempting to build"
