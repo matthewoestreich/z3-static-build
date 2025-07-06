@@ -92,7 +92,7 @@ echo " "
 echo "[INFO] Attempting build"
 echo " "
 if [[ "$PLATFORM" == "win32" ]]; then
-    cmake --build . -- /m # $NUMBER_OF_PROCESSORS
+    cmake --build . -- -m:"$NUMBER_OF_PROCESSORS"
 elif [[ "$PLATFORM" == "darwin" ]]; then
     cmake --build . -- -j$(sysctl -n hw.logicalcpu)
 elif [[ "$PLATFORM" == "linux" ]]; then
