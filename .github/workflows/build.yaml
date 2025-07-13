@@ -30,7 +30,7 @@ jobs:
           VERSION=${TAG#v}  # strip leading 'v'
           git add .
           git commit -m "Add version [$VERSION]" || echo "No changes to commit"
-          git push origin HEAD
+          git push origin HEAD:refs/heads/main
   build:
     needs: version-directory-check
     runs-on: ${{ matrix.os }}
