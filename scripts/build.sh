@@ -40,8 +40,8 @@ if [ ! -d "$Z3_DIR" ]; then
 fi
 
 # If we ar ein clone only mode exit here
-if [ "$1" = "cloneonly" ]; then
-    echo "In clone only mode, exiting now"
+if [ "$#" -eq 1 ] && [ "$1" = "cloneonly" ]; then
+    echo "Only running clone logic"
     exit 0
 fi
 
