@@ -31,7 +31,9 @@ if [ ! -d "$Z3_DIR" ]; then
     echo " "
     echo "[INFO] Z3 version '$Z3_VERSION' not found! Cloning source now..."
     echo " "
-    git clone --depth=1 --branch "z3-${Z3_VERSION}" https://github.com/Z3Prover/z3 "$Z3_DIR"
+    cd ..
+    mkdir Z3-TEMP
+    git clone --depth=1 --branch "z3-${Z3_VERSION}" https://github.com/Z3Prover/z3 "Z3-TEMP"
 fi
 
 # If we ar ein clone only mode exit here
