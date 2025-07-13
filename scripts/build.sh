@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#If you only want to git clone the Z3_VERSION without building, just run "build.sh cloneonly
+
 set -euo pipefail
 
 ###################################################################################################################
@@ -30,6 +32,12 @@ if [ ! -d "$Z3_DIR" ]; then
     echo "[INFO] Z3 version '$Z3_VERSION' not found! Cloning source now..."
     echo " "
     git clone --depth=1 --branch "z3-${Z3_VERSION}" https://github.com/Z3Prover/z3 "$Z3_DIR"
+fi
+
+# If we ar ein clone only mode exit here
+if [ "$1" = "cloneonly" ]; then
+    echo "In clone only mode, exiting now"
+    exit 0
 fi
 
 ###################################################################################################################
